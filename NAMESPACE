@@ -1,0 +1,3 @@
+useDynLib(NearestNeighbors)
+exportPattern("NN1toKmaxPredict_interface")
+#exportPattern("^[[:alpha:]]+")

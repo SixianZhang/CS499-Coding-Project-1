@@ -156,8 +156,3 @@ int main()
     system("pause"); 
 	return 0;
 }
---------------------- 
-作者：忆之独秀 
-来源：CSDN 
-原文：https://blog.csdn.net/lavorange/article/details/16924705 
-版权声明：本文为博主原创文章，转载请附上博文链接！

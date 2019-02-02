@@ -51,7 +51,7 @@ KNN::KNN(int k)
  
 	fin.open("data.txt");
  
-	if(!fin)
+	if(!fin) 
 	{
 		cout<<"can not open the file data.txt"<<endl;
 		exit(1);

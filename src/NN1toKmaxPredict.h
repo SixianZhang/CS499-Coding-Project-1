@@ -8,3 +8,4 @@ int NN1toKmaxPredict(
     const double *test_input_ptr,
     double *test_prediction_ptr
 );
+

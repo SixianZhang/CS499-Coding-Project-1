@@ -20,9 +20,33 @@ int NN1toKmaxPredict(
   if (max_neighbors < 1) {return ERROR_TOO_FEW_NEIGHBORS;}
   
   //Access training matrix or vector
-  Eigen::Map <Eigen::MatrixXd> train_input_matrix(train_input_ptr, n_train_observations, n_features);
-  Eigen::Map <Eigen::VectorXd> train_ouput_matrix(train_output_ptr, n_train_observations);
+  Eigen::Map <Eigen::MatrixXd> train_input_matrix(train_input_ptr,
+                                                  n_train_observations, n_features);
+  Eigen::Map <Eigen::MatrixXd> test_input_matrix(test_input_ptr, 
+                                                  n_test_observations, n_features);
+  Eigen::MatrixXd dist_matrix(n_test_observations, n_train_observations);
   
+  Eigen::VectorXi sorted_index_matrix(n_test_observations, n_train_observations);
   
-  return 0;
+  for (int test_index = 0; test_index < n_test_observations; test_index++)
+  {
+    for (int train_index = 0; train_index < n_train_observations; train_index++)
+    {
+      dist_matrix(test_index,train_index) = 
+        (train_input_matrix.row(train_index) - test_input_matrix.row(test_index)).norm();
+      
+      sorted_index_matrix(test_index, train_index) = train_index; 
+    }
+  }
+  
+  for (int test_index = 0; test_index < n_test_observations; test_index++)
+  {
+    std::sort(sorted_index_matrix.row(test_index).data(),
+               sorted_index_matrix.row(test_index).data() + n_train_observations, 
+               [&dist_matrix, &test_index](int leftside, int rightside){
+                   return dist_matrix(test_index, leftside) < dist_matrix(test_index, rightside);
+                 });
+  }
+
+  
 }

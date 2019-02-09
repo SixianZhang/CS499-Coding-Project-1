@@ -51,6 +51,7 @@ NNLearnCV <-
       fold.vec <- sample(rep(1:n.folds, l = nrow(X.mat)))
     }
     
+<<<<<<< HEAD
     label.is.binary = (y.vec == 0) || (y.vec == 1)
     
     
@@ -76,10 +77,22 @@ NNLearnCV <-
           train.loss.mat[, fold.i] <- colMeans(loss.mat)
         }else{
           validation.loss.mat[, fold.i] <- colMeans(loss.mat)
+=======
+    #
+    for (fold.i in seq_len(n.fold)) {
+      validation.index <- which(fold.vec == fold.i)
+      train.index <- which(fold.vec != fold.i)
+      for (prediction.set.name in c("train", "validation")) {
+        if(predictioni.set.name == "train"){
+        predict.mat <-
+          NN1toKmaxPredict(X.mat[train.index,], y.vec[train.index], X.mat[train.index], max.neighbors)
+        loss.mat <- 
+>>>>>>> 2cb06733b46a5815dd8e53d35331b6dcb51fb19e
         }
       }
     }
     
+<<<<<<< HEAD
     train.loss.vec <- rowMeans(train.loss.mat)
     validation.loss.vec <- rowMeans(validation.loss.mat)
     selected.neighbors <- min(validation.loss.vec)
@@ -90,6 +103,8 @@ NNLearnCV <-
     }
     
     
+=======
+>>>>>>> 2cb06733b46a5815dd8e53d35331b6dcb51fb19e
     
     
   }

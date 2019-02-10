@@ -21,32 +21,36 @@ int NN1toKmaxPredict(
   
   //Access training matrix or vector
   Eigen::Map <Eigen::MatrixXd> train_input_matrix(train_input_ptr,
-                                                  n_train_observations, n_features);
+                                                   n_train_observations, n_features);
   Eigen::Map <Eigen::MatrixXd> test_input_matrix(test_input_ptr, 
-                                                  n_test_observations, n_features);
+                                                   n_test_observations, n_features);
   Eigen::MatrixXd dist_matrix(n_test_observations, n_train_observations);
-  
+
   Eigen::VectorXi sorted_index_matrix(n_test_observations, n_train_observations);
   
+  Eigen::VectorXd tempVector(n_features);
+  Eigen::VectorXd tempVector2(n_features);
   for (int test_index = 0; test_index < n_test_observations; test_index++)
   {
     for (int train_index = 0; train_index < n_train_observations; train_index++)
     {
-      dist_matrix(test_index,train_index) = 
-        (train_input_matrix.row(train_index) - test_input_matrix.row(test_index)).norm();
-      
-      sorted_index_matrix(test_index, train_index) = train_index; 
+      // dist_matrix(test_index,train_index) =
+      //   (train_input_matrix.row(train_index).transpose() - test_input_matrix.row(test_index).transpose()).norm();
+      tempVector = train_input_matrix.row(train_index).transpose();
+      tempVector2 = test_input_matrix.row(test_index).transpose();
+      dist_matrix(test_index,train_index) = (tempVector-tempVector2).norm();
+      sorted_index_matrix(test_index, train_index) = train_index;
     }
   }
   
-  for (int test_index = 0; test_index < n_test_observations; test_index++)
-  {
-    std::sort(sorted_index_matrix.row(test_index).data(),
-               sorted_index_matrix.row(test_index).data() + n_train_observations, 
-               [&dist_matrix, &test_index](int leftside, int rightside){
-                   return dist_matrix(test_index, leftside) < dist_matrix(test_index, rightside);
-                 });
-  }
-
+  // for (int test_index = 0; test_index < n_test_observations; test_index++)
+  // {
+  //   std::sort(sorted_index_matrix.row(test_index).data(),
+  //              sorted_index_matrix.row(test_index).data() + n_train_observations, 
+  //              [&dist_matrix, &test_index](int leftside, int rightside){
+  //                  return dist_matrix(test_index, leftside) < dist_matrix(test_index, rightside);
+  //                });
+  // }
+  return 0;
   
 }

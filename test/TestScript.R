@@ -1,7 +1,7 @@
 data(zip.train, package = "ElemStatLearn")
 X <- zip.train[1:5, -1]
 y <- zip.train[1:5, 1]
-Xtest <- zip.train[6, -1]
+Xtest <- matrix(zip.train[6, -1],ncol = ncol(X))
 ytest <- zip.train[6, 1]
 max.neighbor <- 3
 ypredict <- 0

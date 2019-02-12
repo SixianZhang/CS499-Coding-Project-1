@@ -33,17 +33,14 @@ NNLearnCV <-
       stop("max.neighbors must be an integer scalar")
     }
     
-    if (!all(
-      !is.null(fold.vec),
-      is.vector(fold.vec),
-      is.numeric(fold.vec),
-      length(fold.vec) == length(y.vec)
-    )) {
+    if (!is.null(fold.vec) && !all(is.vector(fold.vec),
+                                   is.numeric(fold.vec),
+                                   length(fold.vec) == length(y.vec))) {
       stop("fold.vec must be a vector with the length of length(y.vec)")
     }
     
-    if (!all(is.integer(n.folds), length(n.fold) == 1)) {
-      stop("n.fold must be an integer scalar")
+    if (!all(is.integer(n.folds), length(n.folds) == 1)) {
+      stop("n.folds must be an integer scalar")
     }
     
     # Assign random fold sequence if it is null
@@ -52,10 +49,11 @@ NNLearnCV <-
     }
     
     label.is.binary = (y.vec == 0) || (y.vec == 1)
+    train.loss.mat = matrix(rep(0,max.neighbors*n.folds), nrow = max.neighbors)
+    validation.loss.mat = matrix(rep(0,max.neighbors*n.folds), nrow = max.neighbors)
     
-    
-    #
-    for (fold.i in seq_len(n.fold)) {
+    # Learning process for each fold
+    for (fold.i in seq_len(n.folds)) {
       for (prediction.set.name in c("train", "validation")) {
         train.index <- which(fold.vec != fold.i)
         if (prediction.set.name == "train") {
@@ -64,30 +62,49 @@ NNLearnCV <-
           validation.index = which(fold.vec == fold.i)
         }
         
-        predict.mat <-
+        CV.result <-
           NN1toKmaxPredict(X.mat[train.index, ], y.vec[train.index], X.mat[validation.index,], max.neighbors)
         
+        CV.result$prediction <- matrix(CV.result$prediction, ncol = max.neighbors)
+        
         loss.mat <- if (label.is.binary) {
-          ifelse(predict.mat > 0.5, 1, 0) != y.vec[validatioin.index]
-        }else{
-          (pred.mat - y.vec[validation.index])^2
+          ifelse(CV.result$prediction > 0.5, 1, 0) != y.vec[validatioin.index]
+        } else{
+          (CV.result$prediction - y.vec[validation.index]) ^ 2
         }
-        if(prediction.set.name == "train"){
+        # print(loss.mat)
+        # print(CV.result$prediction)
+        # print(y.vec[validation.index])
+        # print(is.matrix(CV.result$prediction))
+        if (prediction.set.name == "train") {
           train.loss.mat[, fold.i] <- colMeans(loss.mat)
-        }else{
+        } else{
           validation.loss.mat[, fold.i] <- colMeans(loss.mat)
         }
       }
     }
     
-
+    
     train.loss.vec <- rowMeans(train.loss.mat)
     validation.loss.vec <- rowMeans(validation.loss.mat)
     selected.neighbors <- min(validation.loss.vec)
-    predict <- function(feature.mat){
-      
-      
+    predict <- function(testX.mat) {
+      prediction.result <-
+        NN1toKmaxPredict(X.mat, y.vec, testX.mat, selected.neighbors)
+      prediction.vec <- 
+        prediction.result$prediction[, selected.neighbors]
       return(prediction.vec)
     }
-
+    
+    result.list <-
+      list(
+        X.mat <- X.mat,
+        y.vec <- y.vec,
+        train.loss.mat <- train.loss.mat,
+        validation.loss.mat <- validation.loss.mat,
+        train.loss.vec <- rowMeans(train.loss.mat),
+        validation.loss.vec <- rowMeans(validation.loss.mat),
+        selected.neighbors <- min(validation.loss.vec),
+        predict <- predict
+      )
   }

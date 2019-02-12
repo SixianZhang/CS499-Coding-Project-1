@@ -5,9 +5,9 @@
 #' @param X.mat numeric train feature matrix [n x p]
 #' @param y.vec numeric train label vector [n x 1], 0/1 for binary classification, real number for regression.
 #' @param textX.mat numeric test feature matrix 
-#' @param max.neighbor scalar integer, max number of neighbor 
+#' @param max.neighbors scalar integer, max number of neighbor 
 #'
-#' @return 
+#' @return result.list 
 #' @export
 #'
 #' @examples
@@ -26,16 +26,18 @@ NN1toKmaxPredict <- function(X.mat,y.vec,testX.mat,max.neighbors){
     stop("max.neighbors must be an integer scalar")
   }
   
+  rep(0,nrow(X.mat)*max.neighbors)
+  
   result.list <- .C(
     "NN1toKmaxPredict_interface",
-    as.integer(nrow(X.mat)),
-    as.integer(nrow(testX.mat)),
-    as.integer(ncol(X.mat)),
-    as.integer(max.neighbors),
-    as.double(X.mat),
-    as.double(y.vec),
-    as.double(testX.mat),
-    prediction=double(max.neighbors),
+    n.observation = as.integer(nrow(X.mat)),
+    n.test = as.integer(nrow(testX.mat)),
+    n.feature = as.integer(ncol(X.mat)),
+    max.neighbors = as.integer(max.neighbors),
+    X.mat = as.double(X.mat),
+    y.vec = as.double(y.vec),
+    testX.mat = as.double(testX.mat),
+    prediction = as.double(matrix(rep(0,nrow(testX.mat)*max.neighbors), nrow = nrow(testX.mat))),
     PACKAGE = "NearestNeighbors"
   )
   return(result.list)

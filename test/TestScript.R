@@ -17,9 +17,4 @@ ypredict <- 0
 #   as.double(ypredict)
 # )
 list <- NN1toKmaxPredict(X,y,Xtest,max.neighbor)
-
-someFun <- function(){
-  return(456)
-}
-
-list <- list(1,50,sf = someFun)
+list <- NNLearnCV(X,y,max.neighbor,NULL,2L)

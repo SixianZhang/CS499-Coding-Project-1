@@ -20,6 +20,8 @@ int NN1toKmaxPredict(
   if (max_neighbors < 1) {return ERROR_TOO_FEW_NEIGHBORS;}
   
   //Access training matrix or vector
+  Eigen::Map <Eigen::MatrixXd> test_predication_matrix(test_prediction_ptr, n_test_observations, max_neighbors);
+  
   Eigen::Map <Eigen::MatrixXd> train_input_matrix(train_input_ptr,
                                                    n_train_observations, n_features);
   Eigen::Map <Eigen::MatrixXd> test_input_matrix(test_input_ptr, 
@@ -35,13 +37,17 @@ int NN1toKmaxPredict(
     {
         dist_matrix(test_index,train_index) =
           (train_input_matrix.row(train_index) - test_input_matrix.row(test_index)).norm();
-        sorted_index_matrix(test_index, train_index) = train_index;
+        //sorted_index_matrix(test_index, train_index) = train_index;
     }
   }
   
   for (int test_index = 0; test_index < n_test_observations; test_index++)
   {
-      tempVector = sorted_index_matrix.row(test_index).transpose();
+      for (int index2 = 0; index2 < n_train_observations; index2++)
+      {
+        tempVector(index2) = index2;
+      }
+      //tempVector = sorted_index_matrix.row(test_index);
       std::sort(tempVector.data(), tempVector.data() + n_train_observations,
                 [&tempVector](int leftside, int rightside){
                   return tempVector(leftside) < tempVector(rightside);
@@ -53,8 +59,20 @@ int NN1toKmaxPredict(
       }
   }
   
-    
+  double total = 0.0;
+  for (int test_index = 0; test_index < n_test_observations; test_index++)
+  {
+    for (int modeltype_index = 0; modeltype_index < max_neighbors; modeltype_index++)
+    {
+      int neighbors = modeltype_index + 1;
+      int rowIndex = sorted_index_matrix(test_index, modeltype_index);
+      total = total + train_output_ptr[rowIndex];
+      test_predication_matrix(test_index, modeltype_index) = total/neighbors;
+      
+    }
+  }
   
+
   
 //  for (int test_index = 0; test_index < n_test_observations; test_index++)
   // {

@@ -53,6 +53,7 @@ NNLearnCV <-
     label.is.binary = (y.vec == 0) || (y.vec == 1)
     train.loss.mat = matrix(rep(0, max.neighbors * n.folds), nrow = max.neighbors)
     validation.loss.mat = matrix(rep(0, max.neighbors * n.folds), nrow = max.neighbors)
+
     
     # Learning process for each fold
     for (fold.i in seq_len(n.folds)) {
@@ -69,12 +70,14 @@ NNLearnCV <-
         
         CV.result$prediction <-
           matrix(CV.result$prediction, ncol = max.neighbors)
+
         
         loss.mat <- if (label.is.binary) {
           ifelse(CV.result$prediction > 0.5, 1, 0) != y.vec[validatioin.index]
         } else{
           (CV.result$prediction - y.vec[validation.index]) ^ 2
         }
+
         if (prediction.set.name == "train") {
           train.loss.mat[, fold.i] <- colMeans(loss.mat)
         } else{

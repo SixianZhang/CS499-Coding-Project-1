@@ -11,7 +11,8 @@ int NN1toKmaxPredict(
   double *train_input_ptr,   // a matrix training data inputs
   double *train_output_ptr,  //a vector of training data outputs
   double *test_input_ptr,  // test input matrix
-  double *test_prediction_ptr  //predication of test data
+  double *test_prediction_ptr,  //predication of test data
+  int *another_ptr
 ){
   if (n_train_observations < 1) {return ERROR_NO_TRAINDATA;}
   if (n_test_observations < 1) {return ERROR_NO_TESTDATA;}
@@ -28,15 +29,20 @@ int NN1toKmaxPredict(
                                                    n_test_observations, n_features);
   Eigen::MatrixXd dist_matrix(n_test_observations, n_train_observations);
 
-  Eigen::VectorXi sorted_index_matrix(n_test_observations, n_train_observations);
-  
+  // Eigen::MatrixXd sorted_index_matrix(n_test_observations, n_train_observations);
+  Eigen::Map <Eigen::MatrixXi> sorted_index_matrix(another_ptr,n_test_observations, n_train_observations);
+
   Eigen::VectorXd tempVector(n_train_observations);
+  
+  //Eigen::VectorXd tempVector2(n_train_observations);
+  
+  Eigen::VectorXd temp_index_vector(n_train_observations);
   for (int test_index = 0; test_index < n_test_observations; test_index++)
   {
     for (int train_index = 0; train_index < n_train_observations; train_index++)
     {
         dist_matrix(test_index,train_index) =
-          (train_input_matrix.row(train_index) - test_input_matrix.row(test_index)).norm();
+          (train_input_matrix.row(train_index) - test_input_matrix.row(test_index)).cwiseAbs().sum();
         //sorted_index_matrix(test_index, train_index) = train_index;
     }
   }
@@ -48,20 +54,24 @@ int NN1toKmaxPredict(
         tempVector(index2) = index2;
       }
       //tempVector = sorted_index_matrix.row(test_index);
-      std::sort(tempVector.data(), tempVector.data() + n_train_observations,
-                [&tempVector](int leftside, int rightside){
-                  return tempVector(leftside) < tempVector(rightside);
+      for (int index_num = 0; index_num < n_train_observations;index_num++){
+        temp_index_vector[index_num] = dist_matrix(test_index, index_num);
+      }
+      //tempVector2 = dist_matrix.row(test_index);
+      std::sort(temp_index_vector.data(), temp_index_vector.data() + n_train_observations,
+                [&temp_index_vector](int leftside, int rightside){
+                  return temp_index_vector(leftside) < temp_index_vector(rightside);
                 });
 
       for (int index = 0; index < n_train_observations; index++)
       {
-        sorted_index_matrix(test_index, index) = tempVector(index);
+        sorted_index_matrix(test_index, index) = temp_index_vector(index);
       }
   }
   
-  double total = 0.0;
   for (int test_index = 0; test_index < n_test_observations; test_index++)
   {
+    double total = 0.0;
     for (int modeltype_index = 0; modeltype_index < max_neighbors; modeltype_index++)
     {
       int neighbors = modeltype_index + 1;

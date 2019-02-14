@@ -10,18 +10,17 @@ void NN1toKmaxPredict_interface(
   double *train_input_ptr,
   double *train_output_ptr,
   double *test_input_ptr,
-  double *test_prediction_ptr
+  double *test_prediction_ptr,
+  int *another_ptr
 ){
-  int status = NN1toKmaxPredict(*n_train_observations,*n_test_observations,*n_features,
-                                *max_neighbors,train_input_ptr,train_output_ptr,
-                                test_input_ptr,test_prediction_ptr);
+  int status = NN1toKmaxPredict(*n_train_observations,*n_test_observations,*n_features,*max_neighbors,train_input_ptr,train_output_ptr,test_input_ptr,test_prediction_ptr,another_ptr);
   if(status != 0){
     error("some error message");
   }
 }
 
 R_CMethodDef cMethods[] = {
-  {"NN1toKmaxPredict_interface",(DL_FUNC) &NN1toKmaxPredict_interface,8},
+  {"NN1toKmaxPredict_interface",(DL_FUNC) &NN1toKmaxPredict_interface,9},
   {NULL,NULL,0}
 };
 

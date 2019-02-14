@@ -38,7 +38,11 @@ NN1toKmaxPredict <- function(X.mat,y.vec,testX.mat,max.neighbors){
     y.vec = as.double(y.vec),
     testX.mat = as.double(testX.mat),
     prediction = as.double(matrix(rep(0,nrow(testX.mat)*max.neighbors), nrow = nrow(testX.mat))),
+    test = as.integer(matrix(rep(0,nrow(testX.mat)*nrow(X.mat)), nrow = nrow(testX.mat))),
     PACKAGE = "NearestNeighbors"
   )
+  result.list$prediction = matrix(result.list$prediction,ncol = max.neighbors)
+  result.list$test = matrix(result.list$test,ncol = nrow(X.mat))
+  
   return(result.list)
 }

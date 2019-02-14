@@ -81,17 +81,6 @@ int NN1toKmaxPredict(
       
     }
   }
-  
-
-  
-//  for (int test_index = 0; test_index < n_test_observations; test_index++)
-  // {
-  //   std::sort(sorted_index_matrix.row(test_index).data(),
-  //              sorted_index_matrix.row(test_index).data() + n_train_observations,
-  //              [&dist_matrix, &test_index](int leftside, int rightside){
-  //                  return dist_matrix(test_index, leftside) < dist_matrix(test_index, rightside);
-  //                });
-  // }
   return 0;
   
 }

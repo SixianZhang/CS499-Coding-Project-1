@@ -14,3 +14,4 @@ int NN1toKmaxPredict(
     double *test_input_ptr,
     double *test_prediction_ptr
 );
+

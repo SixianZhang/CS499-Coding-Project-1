@@ -83,7 +83,7 @@ NNLearnCV <-
         
         
         loss.mat <- if (label.is.binary) {
-          ifelse(CV.result > 0.5, 1, 0) != y.vec[validatioin.index]
+          ifelse(CV.result > 0.5, 1, 0) != y.vec[validation.index]
         } else{
           (CV.result - y.vec[validation.index]) ^ 2
         }

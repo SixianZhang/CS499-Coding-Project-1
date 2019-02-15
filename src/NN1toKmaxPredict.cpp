@@ -32,7 +32,7 @@ int NN1toKmaxPredict(
   // Eigen::MatrixXd sorted_index_matrix(n_test_observations, n_train_observations);
   Eigen::Map <Eigen::MatrixXi> sorted_index_matrix(another_ptr,n_test_observations, n_train_observations);
 
-  Eigen::VectorXd tempVector(n_train_observations);
+  Eigen::VectorXd temp_dist_vector(n_train_observations);
   
   //Eigen::VectorXd tempVector2(n_train_observations);
   
@@ -49,18 +49,18 @@ int NN1toKmaxPredict(
   
   for (int test_index = 0; test_index < n_test_observations; test_index++)
   {
-      for (int index2 = 0; index2 < n_train_observations; index2++)
+      for (int dist_index = 0; dist_index < n_train_observations; dist_index++)
       {
-        tempVector(index2) = index2;
+        temp_dist_vector(dist_index) = dist_matrix(test_index, dist_index);
       }
       //tempVector = sorted_index_matrix.row(test_index);
       for (int index_num = 0; index_num < n_train_observations;index_num++){
-        temp_index_vector[index_num] = dist_matrix(test_index, index_num);
+        temp_index_vector(index_num) = index_num;
       }
       //tempVector2 = dist_matrix.row(test_index);
-      std::sort(temp_index_vector.data(), temp_index_vector.data() + n_train_observations,
-                [&temp_index_vector](int leftside, int rightside){
-                  return temp_index_vector(leftside) < temp_index_vector(rightside);
+      std::sort(temp_index_vector.data(), temp_index_vector.data() + temp_index_vector.size(),
+                [&temp_dist_vector](int leftside, int rightside){
+                  return temp_dist_vector(leftside) < temp_dist_vector(rightside);
                 });
 
       for (int index = 0; index < n_train_observations; index++)

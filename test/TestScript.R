@@ -1,8 +1,8 @@
 data(zip.train, package = "ElemStatLearn")
-X.mat <- zip.train[1:100, -1]
-y.vec <- zip.train[1:100, 1]
-testX.mat <- matrix(zip.train[101:105, -1],ncol = ncol(X.mat))
-testy <- zip.train[101:105, 1]
+X.mat <- zip.train[1:1000, -1]
+y.vec <- zip.train[1:1000, 1]
+testX.mat <- matrix(zip.train[1001:1005, -1],ncol = ncol(X.mat))
+testy <- zip.train[1001:1005, 1]
 max.neighbors <- 3L
 # ypredict <- 0
 # .C(

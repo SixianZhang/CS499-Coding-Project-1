@@ -28,7 +28,7 @@ NNLearnCV <-
            y.vec,
            max.neighbors = 30L,
            fold.vec = NULL,
-           n.folds = 3L) {
+           n.folds = 5L) {
     # Check type and dimension
     if (!all(is.matrix(X.mat), is.numeric(X.mat))) {
       stop("X.mat must be a numeric matrix")

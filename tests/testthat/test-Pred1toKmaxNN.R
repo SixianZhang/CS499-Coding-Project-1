@@ -11,8 +11,8 @@ test_that(
   {
     C.pred.mat <-
       NN1toKmaxPredict(X.mat, y.vec, testX.mat, max.neighbors)
-    expect_true(is.numeric(C.pred.vec))
-    expect_equal(nrow(C.pred.vec), nrow(testX.mat))
+    expect_true(is.numeric(C.pred.mat))
+    expect_equal(nrow(C.pred.mat), nrow(testX.mat))
   }
 )
 

@@ -11,8 +11,8 @@ int NN1toKmaxPredict(
   double *train_input_ptr,   // a matrix training data inputs
   double *train_output_ptr,  //a vector of training data outputs
   double *test_input_ptr,  // test input matrix
-  double *test_prediction_ptr,  //predication of test data
-  int *another_ptr
+  double *test_prediction_ptr  //predication of test data
+  // int *another_ptr
 ){
   if (n_train_observations < 1) {return ERROR_NO_TRAINDATA;}
   if (n_test_observations < 1) {return ERROR_NO_TESTDATA;}
@@ -29,8 +29,8 @@ int NN1toKmaxPredict(
                                                    n_test_observations, n_features);
   Eigen::MatrixXd dist_matrix(n_test_observations, n_train_observations);
 
-  // Eigen::MatrixXd sorted_index_matrix(n_test_observations, n_train_observations);
-  Eigen::Map <Eigen::MatrixXi> sorted_index_matrix(another_ptr,n_test_observations, n_train_observations);
+  Eigen::MatrixXd sorted_index_matrix(n_test_observations, n_train_observations);
+  // Eigen::Map <Eigen::MatrixXi> sorted_index_matrix(another_ptr,n_test_observations, n_train_observations);
 
   Eigen::VectorXd temp_dist_vector(n_train_observations);
   

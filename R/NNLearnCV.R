@@ -1,24 +1,34 @@
 #' Cross-validation using nearest neighbors
 #'
-#' Using nearest neighbors algorithm for cross validation to find out the best K and give a prediction of the test data based on it.
+#' Using nearest neighbors algorithm for cross validation to find out the best K and 
+#' give a prediction of the test data based on it.
 #'
 #' @param X.mat numeric train feature matrix [n x p]
-#' @param y.vec numeric train label vector [n x 1], 0/1 for binary classification, real number for regression.
+#' @param y.vec numeric train label vector [n x 1], 0/1 for binary classification, 
+#' real number for regression.
 #' @param max.neighbors scalar integer, max number of the neighbors
 #' @param fold.vec integer vector that holds fold ID number [n x 1]
 #' @param n.folds scalar integer, number of the folds
 #'
-#' @return 
+#' @return A list that contains training features and labels, loss matrix and loss 
+#' vector of training and validation sets, best neighbor number, and a predict 
+#' function using learning result
 #' @export
 #'
-#' @examples
+#' @examples 
+#' data(zip.train, package = "ElemStatLearn")
+#' X.mat <- zip.train[1:100, -1]
+#' y.vec <- zip.train[1:100, 1]
+#' testX.mat <- matrix(zip.train[101:105, -1],ncol = ncol(X.mat))
+#' cv.list <- NNLearnCV(X.mat,y.vec,max.neighbors,NULL,5L)
+#' cv.list$predict(testX.mat)
+#' zip.train[101:105, 1]
 NNLearnCV <-
   function(X.mat,
            y.vec,
            max.neighbors = 30L,
            fold.vec = NULL,
            n.folds = 5L) {
-    
     # Check type and dimension
     if (!all(is.matrix(X.mat), is.numeric(X.mat))) {
       stop("X.mat must be a numeric matrix")
@@ -53,7 +63,7 @@ NNLearnCV <-
     label.is.binary = (y.vec == 0) || (y.vec == 1)
     train.loss.mat = matrix(rep(0, max.neighbors * n.folds), nrow = max.neighbors)
     validation.loss.mat = matrix(rep(0, max.neighbors * n.folds), nrow = max.neighbors)
-
+    
     
     # Learning process for each fold
     for (fold.i in seq_len(n.folds)) {
@@ -66,18 +76,18 @@ NNLearnCV <-
         }
         
         CV.result <-
-          NN1toKmaxPredict(X.mat[train.index, ], y.vec[train.index], X.mat[validation.index,], max.neighbors)
+          NN1toKmaxPredict(X.mat[train.index,], y.vec[train.index], X.mat[validation.index, ], max.neighbors)
         
-        CV.result$prediction <-
-          matrix(CV.result$prediction, ncol = max.neighbors)
-
+        CV.result <-
+          matrix(CV.result, ncol = max.neighbors)
+        
         
         loss.mat <- if (label.is.binary) {
-          ifelse(CV.result$prediction > 0.5, 1, 0) != y.vec[validatioin.index]
+          ifelse(CV.result > 0.5, 1, 0) != y.vec[validatioin.index]
         } else{
-          (CV.result$prediction - y.vec[validation.index]) ^ 2
+          (CV.result - y.vec[validation.index]) ^ 2
         }
-
+        
         if (prediction.set.name == "train") {
           train.loss.mat[, fold.i] <- colMeans(loss.mat)
         } else{
@@ -89,32 +99,34 @@ NNLearnCV <-
     # Assign results to the output
     train.loss.vec <- rowMeans(train.loss.mat)
     validation.loss.vec <- rowMeans(validation.loss.mat)
-    selected.neighbors <- min(validation.loss.vec)
+    selected.neighbors <- which.min(validation.loss.vec)
     
     # Predict function
     predict <- function(testX.mat) {
       # type demesion check
-      if(!all(is.numeric(testX.mat),is.matrix(testX.mat),ncol(testX.mat) == ncol(X.mat))){
+      if (!all(is.numeric(testX.mat),
+               is.matrix(testX.mat),
+               ncol(testX.mat) == ncol(X.mat))) {
         stop("testX.mat must be a numeric matrix with ncol(X.mat) columns")
       }
       
       prediction.result <-
         NN1toKmaxPredict(X.mat, y.vec, testX.mat, as.integer(selected.neighbors))
       prediction.vec <-
-        prediction.result$prediction[, selected.neighbors]
+        prediction.result[, selected.neighbors]
       return(prediction.vec)
     }
     
     # Return result
     result.list <-
       list(
-        X.mat <- X.mat,
-        y.vec <- y.vec,
-        train.loss.mat <- train.loss.mat,
-        validation.loss.mat <- validation.loss.mat,
-        train.loss.vec <- rowMeans  (train.loss.mat),
-        validation.loss.vec <- rowMeans(validation.loss.mat),
-        selected.neighbors <- min(validation.loss.vec),
-        predict= predict
+        X.mat = X.mat,
+        y.vec = y.vec,
+        train.loss.mat = train.loss.mat,
+        validation.loss.mat = validation.loss.mat,
+        train.loss.vec = rowMeans  (train.loss.mat),
+        validation.loss.vec = rowMeans(validation.loss.mat),
+        selected.neighbors = which.min(validation.loss.vec),
+        predict = predict
       )
   }

@@ -1,16 +1,24 @@
 #' 1 to k nearest neighbor algorithm
 #' 
-#' R function that wraps the C++ code.
+#' R function that wraps the C++ NN1toKmaxPredict method. 
 #' 
 #' @param X.mat numeric train feature matrix [n x p]
 #' @param y.vec numeric train label vector [n x 1], 0/1 for binary classification, real number for regression.
 #' @param textX.mat numeric test feature matrix 
 #' @param max.neighbors scalar integer, max number of neighbor 
 #'
-#' @return result.list 
+#' @return numeric matrix of size [nrow(testX.mat) x max.neighbors], prediction of the test data using K from 1 to max.neighbors 
 #' @export
 #'
-#' @examples
+#' @examples 
+#' data(zip.train, package = "ElemStatLearn")
+#' X.mat <- zip.train[1:100, -1]
+#' y.vec <- zip.train[1:100, 1]
+#' testX.mat <- matrix(zip.train[101:105, -1],ncol = ncol(X.mat))
+#' max.neighbors <- 3L
+#' predict.list <- NN1toKmaxPredict(X.mat,y.vec,testX.mat,max.neighbors)
+#' predict.list
+#' zip.train[101:105, 1]
 
 NN1toKmaxPredict <- function(X.mat,y.vec,testX.mat,max.neighbors){
   if(!all(is.matrix(X.mat),is.numeric(X.mat))){
@@ -38,11 +46,11 @@ NN1toKmaxPredict <- function(X.mat,y.vec,testX.mat,max.neighbors){
     y.vec = as.double(y.vec),
     testX.mat = as.double(testX.mat),
     prediction = as.double(matrix(rep(0,nrow(testX.mat)*max.neighbors), nrow = nrow(testX.mat))),
-    test = as.integer(matrix(rep(0,nrow(testX.mat)*nrow(X.mat)), nrow = nrow(testX.mat))),
+    # test = as.integer(matrix(rep(0,nrow(testX.mat)*nrow(X.mat)), nrow = nrow(testX.mat))),
     PACKAGE = "NearestNeighbors"
   )
   result.list$prediction = matrix(result.list$prediction,ncol = max.neighbors)
-  result.list$test = matrix(result.list$test,ncol = nrow(X.mat))
+  # result.list$test = matrix(result.list$test,ncol = nrow(X.mat))
   
-  return(result.list)
+  return(result.list$prediction)
 }

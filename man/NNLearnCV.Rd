@@ -10,7 +10,8 @@ NNLearnCV(X.mat, y.vec, max.neighbors = 30L, fold.vec = NULL,
 \arguments{
 \item{X.mat}{numeric train feature matrix [n x p]}
 
-\item{y.vec}{numeric train label vector [n x 1], 0/1 for binary classification, real number for regression.}
+\item{y.vec}{numeric train label vector [n x 1], 0/1 for binary classification, 
+real number for regression.}
 
 \item{max.neighbors}{scalar integer, max number of the neighbors}
 
@@ -18,6 +19,21 @@ NNLearnCV(X.mat, y.vec, max.neighbors = 30L, fold.vec = NULL,
 
 \item{n.folds}{scalar integer, number of the folds}
 }
+\value{
+A list that contains training features and labels, loss matrix and loss 
+vector of training and validation sets, best neighbor number, and a predict 
+function using learning result
+}
 \description{
-Using nearest neighbors algorithm for cross validation to find out the best K and give a prediction of the test data based on it.
+Using nearest neighbors algorithm for cross validation to find out the best K and 
+give a prediction of the test data based on it.
+}
+\examples{
+data(zip.train, package = "ElemStatLearn")
+X.mat <- zip.train[1:100, -1]
+y.vec <- zip.train[1:100, 1]
+testX.mat <- matrix(zip.train[101:105, -1],ncol = ncol(X.mat))
+cv.list <- NNLearnCV(X.mat,y.vec,max.neighbors,NULL,5L)
+cv.list$predict(testX.mat)
+zip.train[101:105, 1]
 }

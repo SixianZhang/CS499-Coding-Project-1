@@ -28,7 +28,7 @@ NN1toKmaxPredict <- function(X.mat,y.vec,testX.mat,max.neighbors){
     stop("y.vec must be a numeric vector of size(X.mat)")
   }
   if(!all(is.numeric(testX.mat), is.matrix(testX.mat), ncol(testX.mat) == ncol(X.mat))){
-    stop("testX.mat must be a numeric matrix with nrcol(X.mat) columns")
+    stop("testX.mat must be a numeric matrix with ncol(X.mat) columns")
   }
   if(!all(is.integer(max.neighbors), length(max.neighbors) == 1)){
     stop("max.neighbors must be an integer scalar")

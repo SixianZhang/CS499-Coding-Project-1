@@ -5,7 +5,7 @@
 \title{Cross-validation using nearest neighbors}
 \usage{
 NNLearnCV(X.mat, y.vec, max.neighbors = 30L, fold.vec = NULL,
-  n.folds = 5L)
+  n.folds = 3L)
 }
 \arguments{
 \item{X.mat}{numeric train feature matrix [n x p]}

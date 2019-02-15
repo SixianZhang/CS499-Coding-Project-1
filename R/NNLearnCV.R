@@ -8,7 +8,7 @@
 #' @param fold.vec integer vector that holds fold ID number [n x 1]
 #' @param n.folds scalar integer, number of the folds
 #'
-#' @return
+#' @return 
 #' @export
 #'
 #' @examples
@@ -94,12 +94,12 @@ NNLearnCV <-
     # Predict function
     predict <- function(testX.mat) {
       # type demesion check
-      if(!all(is.numeric(testX.mat),is.matrix(tesX.mat),ncol(testX.mat) == ncol(X.mat))){
+      if(!all(is.numeric(testX.mat),is.matrix(testX.mat),ncol(testX.mat) == ncol(X.mat))){
         stop("testX.mat must be a numeric matrix with ncol(X.mat) columns")
       }
       
       prediction.result <-
-        NN1toKmaxPredict(X.mat, y.vec, testX.mat, selected.neighbors)
+        NN1toKmaxPredict(X.mat, y.vec, testX.mat, as.integer(selected.neighbors))
       prediction.vec <-
         prediction.result$prediction[, selected.neighbors]
       return(prediction.vec)
@@ -115,6 +115,6 @@ NNLearnCV <-
         train.loss.vec <- rowMeans  (train.loss.mat),
         validation.loss.vec <- rowMeans(validation.loss.mat),
         selected.neighbors <- min(validation.loss.vec),
-        predict <- predict
+        predict= predict
       )
   }

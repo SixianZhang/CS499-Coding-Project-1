@@ -11,7 +11,8 @@ void NN1toKmaxPredict_interface(
   double *train_output_ptr,
   double *test_input_ptr,
   double *test_prediction_ptr
-  // int *another_ptr
+  // int *another_ptr,
+  // double *dist_ptr
 ){
   int status = NN1toKmaxPredict(*n_train_observations,*n_test_observations,*n_features,*max_neighbors,train_input_ptr,train_output_ptr,test_input_ptr,test_prediction_ptr);
   if(status != 0){

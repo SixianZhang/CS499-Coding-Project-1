@@ -12,7 +12,8 @@ int NN1toKmaxPredict(
   double *train_output_ptr,  //a vector of training data outputs
   double *test_input_ptr,  // test input matrix
   double *test_prediction_ptr  //predication of test data
-  // int *another_ptr
+  // int *another_ptr,
+  // double *dist_ptr
 ){
   if (n_train_observations < 1) {return ERROR_NO_TRAINDATA;}
   if (n_test_observations < 1) {return ERROR_NO_TESTDATA;}
@@ -28,7 +29,8 @@ int NN1toKmaxPredict(
   Eigen::Map <Eigen::MatrixXd> test_input_matrix(test_input_ptr, 
                                                    n_test_observations, n_features);
   Eigen::MatrixXd dist_matrix(n_test_observations, n_train_observations);
-
+  // Eigen::Map <Eigen::MatrixXd> dist_matrix(dist_ptr,n_test_observations, n_train_observations);
+  // int *another_ptr;
   Eigen::MatrixXd sorted_index_matrix(n_test_observations, n_train_observations);
   // Eigen::Map <Eigen::MatrixXi> sorted_index_matrix(another_ptr,n_test_observations, n_train_observations);
 
@@ -36,7 +38,7 @@ int NN1toKmaxPredict(
   
   //Eigen::VectorXd tempVector2(n_train_observations);
   
-  Eigen::VectorXd temp_index_vector(n_train_observations);
+  Eigen::VectorXi temp_index_vector(n_train_observations);
   for (int test_index = 0; test_index < n_test_observations; test_index++)
   {
     for (int train_index = 0; train_index < n_train_observations; train_index++)
@@ -81,6 +83,7 @@ int NN1toKmaxPredict(
       
     }
   }
+  // test_input_ptr = another_ptr;
   return 0;
   
 }

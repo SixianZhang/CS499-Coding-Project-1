@@ -25,7 +25,7 @@ NN1toKmaxPredict <- function(X.mat,y.vec,testX.mat,max.neighbors){
     stop("X.mat must be a numeric matrix")
   }
   if(!all(is.numeric(y.vec), is.vector(y.vec),length(y.vec) == nrow(X.mat))){
-    stop("y.cec must be a numeric vector of size(X.mat)")
+    stop("y.vec must be a numeric vector of size(X.mat)")
   }
   if(!all(is.numeric(testX.mat), is.matrix(testX.mat), ncol(testX.mat) == ncol(X.mat))){
     stop("testX.mat must be a numeric matrix with nrcol(X.mat) columns")
@@ -34,7 +34,7 @@ NN1toKmaxPredict <- function(X.mat,y.vec,testX.mat,max.neighbors){
     stop("max.neighbors must be an integer scalar")
   }
   
-  rep(0,nrow(X.mat)*max.neighbors)
+  # rep(0,nrow(X.mat)*max.neighbors)
   
   result.list <- .C(
     "NN1toKmaxPredict_interface",
@@ -47,10 +47,12 @@ NN1toKmaxPredict <- function(X.mat,y.vec,testX.mat,max.neighbors){
     testX.mat = as.double(testX.mat),
     prediction = as.double(matrix(rep(0,nrow(testX.mat)*max.neighbors), nrow = nrow(testX.mat))),
     # test = as.integer(matrix(rep(0,nrow(testX.mat)*nrow(X.mat)), nrow = nrow(testX.mat))),
+    # # dist = as.double(matrix(rep(0,nrow(testX.mat)*nrow(X.mat)), nrow = nrow(testX.mat))),
     PACKAGE = "NearestNeighbors"
   )
   result.list$prediction = matrix(result.list$prediction,ncol = max.neighbors)
   # result.list$test = matrix(result.list$test,ncol = nrow(X.mat))
   
   return(result.list$prediction)
+  # return(result.list)
 }

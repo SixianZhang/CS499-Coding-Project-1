@@ -13,6 +13,7 @@ int NN1toKmaxPredict(
     double *train_output_ptr,
     double *test_input_ptr,
     double *test_prediction_ptr
-    // int *another_ptr
+    // int *another_ptr,
+    // double *dist_ptr
 );
 

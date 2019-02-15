@@ -4,6 +4,7 @@ X.mat = data.matrix(subset(spam,select = -c(spam)))
 y.vec = spam$spam
 levels(y.vec) <- c(0,1)
 y.vec <- as.double(as.vector(y.vec))
+
 testX.mat = X.mat[c(1,nrow(X.mat)),]
 max.neighbors = 5L
 

@@ -27,7 +27,7 @@ NN.pred.mat <-
     n.folds = n.folds
   )
 NN.loss.vec <-
-  NN.pred.mat$train.loss.mat[NN.pred.mat$selected.neighbors,]
+  NN.pred.mat$train.loss.mat[NN.pred.mat$selected.neighbors, ]
 
 baseline.loss.vec <- BaselinePredict(y.vec, fold.vec, n.folds)
 result <- t(cbind(NN.loss.vec, baseline.loss.vec))
@@ -65,6 +65,7 @@ legend(
   yjust = 0
 )
 
+
 # #Data 5: ozone
 # rm(list = ls())
 data(ozone, package = "ElemStatLearn")
@@ -81,7 +82,7 @@ NN.pred.mat <-
     n.folds = n.folds
   )
 NN.loss.vec <-
-  NN.pred.mat$train.loss.mat[NN.pred.mat$selected.neighbors,]
+  NN.pred.mat$train.loss.mat[NN.pred.mat$selected.neighbors, ]
 
 baseline.loss.vec <- BaselinePredict(y.vec, fold.vec, n.folds)
 result <- t(cbind(NN.loss.vec, baseline.loss.vec))

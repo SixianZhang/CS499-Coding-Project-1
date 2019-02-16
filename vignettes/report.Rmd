@@ -4,8 +4,8 @@ author: "Sixian Zhang, Zaoyi Chi, Hao Wang"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Report for project 1 on nearest neighbors}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Report for project 1 on K Nearest Neighbors}
+  %\VignetteEngine{knitr::knitr}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -16,13 +16,22 @@ knitr::opts_chunk$set(
 )
 ```
 
-Manhattan distance: **$d(i,j)=\sum_{1}^{n}|X_1-X_2|+|Y_1-Y_2|$**
+## Introduction
+For this project we created an R package with C++ code that implements a version of the nearest neighbors algorithm.
 
-For the nearest neighbor prediction function: **$f_{D,k(x)} = \frac{1}{k} \sum_{i\in N_{D,k}}^{n} y_i$**
+Here are some significant formulas that have been used in this function:
 
-The optimal number of neighbors **$\hat{k} = argmin_{k\in (1,2,...,k_{max})} \frac{1}{F_{max}} \sum_{S=1}^{F_{max}} Error_{Ds}(f_{D,-S,k})$**
 
+**Manhattan distance: ** **$d(i,j)=\sum_{1}^{n}(|X_1-X_2|+|Y_1-Y_2|)$**
+
+**Nearest neighbor prediction function: ** **$f_{D,k(x)} = \frac{1}{k} \sum_{i\in N_{D,k}}^{n} y_i$**
+
+**The optimal number of neighbors:      ** **$\hat{k} = argmin_{k\in (1,2,...,k_{max})} \frac{1}{F_{max}} \sum_{S=1}^{F_{max}} Error_{Ds}(f_{D,-S,k})$     ** 
   *(as estimated via minimizing the mean validation loss).
+  
+
+## Main Function
+The purpose of this section is to give users a general information of this package. We will briefly go over the main functions.
 
 ```{r}
 ## Source Code:
@@ -67,6 +76,8 @@ BaselinePredict <- function(y.vec, fold.vec, n.folds) {
 
 
 
+## Experiments/application
+we are going to run our code on the following data sets.
 
 ## Data set 1: spam
 ```{r}
@@ -114,7 +125,7 @@ barplot(
 ```
 
 Difference between NN and baseline:
-The mean loss value of the NN prediction is typically smaller than the Baseline prediction.
+**The mean loss value of the NN prediction is typically smaller than the Baseline prediction.**
 
 
 ### Train/validation loss plot
@@ -198,7 +209,7 @@ barplot(
 
 Difference between NN and baseline:
 
-The mean loss value of the NN prediction is similar to the Baseline prediction. Since SAheart dataset is small dataset with binary calsses. The general binary baseline priction is good for small dataset, becasue it relies on most of data in a samll set and can predict the most of of cases correctly.   
+**The mean loss value of the NN prediction is similar to the Baseline prediction. Since SAheart dataset is small dataset with binary calsses. The general binary baseline priction is good for small dataset, becasue it relies on most of data in a samll set and can predict the most of of cases correctly.**
 
 
 ### Train/validation loss plot
@@ -291,7 +302,7 @@ barplot(
 ```
 
 Difference between NN and baseline:
-The mean loss value of the NN prediction is typically smaller than the Baseline prediction.
+**The mean loss value of the NN prediction is typically smaller than the Baseline prediction.**
 
 
 ### Train/validation loss plot
@@ -371,7 +382,7 @@ barplot(
 ```
 
 Difference between NN and baseline: 
-The mean loss value of the NN prediction is typically smaller than the Baseline prediction.
+**The mean loss value of the NN prediction is typically smaller than the Baseline prediction.**
 
 ### Train/validation loss plot
 ```{r, fig.show='hold', fig.width= 6, fig.height= 6}
@@ -475,7 +486,7 @@ legend(
 ```
 
 Difference between NN and baseline:
-The mean loss value of the NN prediction is typically smaller than the Baseline prediction.
+**The mean loss value of the NN prediction is typically smaller than the Baseline prediction.**
 
 
 ### Train/validation loss plot
@@ -486,11 +497,4 @@ The mean loss value of the NN prediction is typically smaller than the Baseline 
 The optimal number of neighbors is: **`r NN.pred.mat$selected.neighbors`**
 
 
-
-
-
-
-
-
-
-
+## End of the report

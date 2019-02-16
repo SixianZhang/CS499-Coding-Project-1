@@ -28,7 +28,12 @@ rownames(result) <- c("Nearest Neighbors","Baseline")
 colnames(result) <- c("Fold 1","Fold 2","Fold 3")
 result
 barplot(result,main = "Regression: prostate",xlab = "mean loss value",legend = (rownames(result)),beside = TRUE)
-plot()
+matplot(y = NN.pred.mat$validation.loss.vec, type = "l", pch=15,col = c(17))
+dot.x <- NN.pred.mat$selected.neighbors
+dot.y <- NN.pred.mat$validation.loss.vec[dot.x]
+matpoints(x = dot.x,y = dot.y, col = 2,pch = 19)
+
+
 # #Data 5: ozone 
 # rm(list = ls())
 data(ozone, package = "ElemStatLearn")
@@ -46,3 +51,7 @@ rownames(result) <- c("Nearest Neighbors","Baseline")
 colnames(result) <- c("Fold 1","Fold 2","Fold 3")
 result
 barplot(result,main = "Regression: ozone", xlab = "mean loss value",legend = (rownames(result)),beside = TRUE)
+matplot(y = NN.pred.mat$validation.loss.vec, type = "l", pch=15,col = c(17))
+dot.x <- NN.pred.mat$selected.neighbors
+dot.y <- NN.pred.mat$validation.loss.vec[dot.x]
+matpoints(x = dot.x,y = dot.y, col = 2,pch = 19)

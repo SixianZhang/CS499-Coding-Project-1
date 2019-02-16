@@ -111,4 +111,3 @@ nnp.predict.loss <- colMeans(C.pred.model$validation.loss.mat)
 nnploss.vs.baseloss <- rbind(nnp.predict.loss, base.loss)
 colnames(nnploss.vs.baseloss) <- c("Fold1","Fold2","Fold3")
 nnploss.vs.baseloss
->>>>>>> 4d5bb6bf3bc6a5b30a82f070711b1ce77e438628

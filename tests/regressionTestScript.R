@@ -1,3 +1,5 @@
+library(NearestNeighbors)
+
 BaselinePredict <- function(y.vec, fold.vec, n.folds) {
   prediction <- rep(NA, n.folds)
   prediction.loss <- rep(NA, n.folds)
@@ -33,6 +35,7 @@ result <- t(cbind(NN.loss.vec, baseline.loss.vec))
 rownames(result) <- c("Nearest Neighbors", "Baseline")
 colnames(result) <- c("Fold 1", "Fold 2", "Fold 3")
 result
+max.neighbors <- length(NN.pred.mat$train.loss.vec)
 barplot(
   result,
   main = "Regression: prostate",

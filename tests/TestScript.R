@@ -1,4 +1,4 @@
-
+library(NearestNeighbors)
 binary.base.loss <- function(y.vec, fold.vec, n.folds){
   base.loss = c(rep(0, n.folds))
   index1 <- which(y.vec == 1)

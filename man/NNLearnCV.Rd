@@ -33,6 +33,7 @@ data(zip.train, package = "ElemStatLearn")
 X.mat <- zip.train[1:100, -1]
 y.vec <- zip.train[1:100, 1]
 testX.mat <- matrix(zip.train[101:105, -1],ncol = ncol(X.mat))
+max.neighbors <- 30L
 cv.list <- NNLearnCV(X.mat,y.vec,max.neighbors,NULL,5L)
 cv.list$predict(testX.mat)
 zip.train[101:105, 1]

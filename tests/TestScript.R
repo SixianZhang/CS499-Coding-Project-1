@@ -50,6 +50,40 @@ nnploss.vs.baseloss <- rbind(nnp.predict.loss, base.loss)
 colnames(nnploss.vs.baseloss) <- c("Fold1","Fold2","Fold3")
 nnploss.vs.baseloss
 
+
+
+barplot(
+  nnploss.vs.baseloss,
+  main = "Binary Classification: spam",
+  xlab = "mean loss value",
+  legend = (rownames(nnploss.vs.baseloss)),
+  beside = TRUE
+)
+
+matplot(
+  y = cbind(C.pred.model$validation.loss.vec, C.pred.model$train.loss.vec),
+  xlab = "neighbors",
+  ylab = "mean loss value",
+  type = "l",
+  lty = 1:2,
+  pch = 15,
+  col = c(17)
+)
+
+dot.x <- C.pred.model$selected.neighbors
+dot.y <- C.pred.model$validation.loss.vec[dot.x]
+matpoints(x = dot.x,
+          y = dot.y,
+          col = 2,
+          pch = 19)
+legend(
+  x = max.neighbors,
+  0,
+  c("Validation loss", "Train loss"),
+  lty = 1:2,
+  xjust = 1,
+  yjust = 0
+)
 #------------------------------------------------------------------------------
 
 #Data 2: SAheart
@@ -79,8 +113,41 @@ nnploss.vs.baseloss <- rbind(nnp.predict.loss, base.loss)
 colnames(nnploss.vs.baseloss) <- c("Fold1","Fold2","Fold3")
 nnploss.vs.baseloss
 
+barplot(
+  nnploss.vs.baseloss,
+  main = "Binary Classification: SAheart",
+  xlab = "mean loss value",
+  legend = (rownames(nnploss.vs.baseloss)),
+  beside = TRUE
+)
+
+dot.x <- C.pred.model$selected.neighbors
+dot.y <- C.pred.model$validation.loss.vec[dot.x]
+
+matplot(
+  y = cbind(C.pred.model$validation.loss.vec, C.pred.model$train.loss.vec),
+  xlab = "neighbors",
+  ylab = "mean loss value",
+  type = "l",
+  lty = 1:2,
+  pch = 15,
+  col = c(17)
+)
+
+matpoints(x = dot.x,
+          y = dot.y,
+          col = 2,
+          pch = 19)
 
 
+legend(
+  x = max.neighbors,
+  0,
+  c("Validation loss", "Train loss"),
+  lty = 1:2,
+  xjust = 1,
+  yjust = 0
+)
 
 #Data 3: zip.train
 #--------------------Data Initalization---------------------------
@@ -111,3 +178,37 @@ nnp.predict.loss <- colMeans(C.pred.model$validation.loss.mat)
 nnploss.vs.baseloss <- rbind(nnp.predict.loss, base.loss)
 colnames(nnploss.vs.baseloss) <- c("Fold1","Fold2","Fold3")
 nnploss.vs.baseloss
+
+barplot(
+  nnploss.vs.baseloss,
+  main = "Binary Classification: zip.train",
+  xlab = "mean loss value",
+  legend = (rownames(nnploss.vs.baseloss)),
+  beside = TRUE
+)
+
+dot.x <- C.pred.model$selected.neighbors
+dot.y <- C.pred.model$validation.loss.vec[dot.x]
+
+matplot(
+  y = cbind(C.pred.model$validation.loss.vec, C.pred.model$train.loss.vec),
+  xlab = "neighbors",
+  ylab = "mean loss value",
+  type = "l",
+  lty = 1:2,
+  pch = 15,
+  col = c(17)
+)
+
+matpoints(x = dot.x,
+          y = dot.y,
+          col = 2,
+          pch = 19)
+legend(
+  x = max.neighbors,
+  0,
+  c("Validation loss", "Train loss"),
+  lty = 1:2,
+  xjust = 1,
+  yjust = 0
+)

@@ -10,7 +10,6 @@ BaselinePredict <- function(y.vec,fold.vec,n.folds){
   return(prediction.loss)
 }
 
-
 # Data 4: prostate
 
 data(prostate, package = "ElemStatLearn")
@@ -29,6 +28,7 @@ colnames(result) <- c("Fold 1","Fold 2","Fold 3")
 result
 barplot(result,main = "Regression: prostate",xlab = "mean loss value",legend = (rownames(result)),beside = TRUE)
 plot()
+
 # #Data 5: ozone 
 # rm(list = ls())
 data(ozone, package = "ElemStatLearn")

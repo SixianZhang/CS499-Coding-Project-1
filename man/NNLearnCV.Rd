@@ -29,6 +29,7 @@ Using nearest neighbors algorithm for cross validation to find out the best K an
 give a prediction of the test data based on it.
 }
 \examples{
+####################Regression#################
 data(zip.train, package = "ElemStatLearn")
 X.mat <- zip.train[1:100, -1]
 y.vec <- zip.train[1:100, 1]
@@ -37,4 +38,20 @@ max.neighbors <- 30L
 cv.list <- NNLearnCV(X.mat,y.vec,max.neighbors,NULL,5L)
 cv.list$predict(testX.mat)
 zip.train[101:105, 1]
+
+#################Binary Classification################
+data(spam, package = "ElemStatLearn")
+n.folds = 3L
+X.mat <- data.matrix(subset(spam,select = -c(spam)))
+y.vec <- spam$spam
+levels(y.vec) <- c(0,1)
+y.vec <- as.double(as.vector(y.vec))
+testX.mat <- X.mat[c(1,nrow(X.mat)),]
+max.neighbors <- 30L
+fold.vec <- sample(rep(1:n.folds, l = nrow(X.mat)))
+C.pred.model <- NNLearnCV(X.mat, y.vec, max.neighbors, fold.vec, n.folds)
+prediction.output <- C.pred.model$predict(testX.mat)
+prediction.output
+y.vec[c(1,nrow(X.mat))]
+
 }

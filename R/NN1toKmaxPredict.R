@@ -31,9 +31,8 @@
 #' testX.mat <- X.mat[c(1,nrow(X.mat)),]
 #' max.neighbors <- 30L
 #' fold.vec <- sample(rep(1:n.folds, l = nrow(X.mat)))
-#' C.pred.model <- NNLearnCV(X.mat, y.vec, max.neighbors, fold.vec, n.folds)
-#' prediction.output <- C.pred.model$predict(testX.mat)
-#' prediction.output
+#' C.pred.model <- NN1toKmaxPredict(X.mat, y.vec, testX.mat,max.neighbors)
+#' C.pred.model
 #' y.vec[c(1,nrow(X.mat))]
 
 

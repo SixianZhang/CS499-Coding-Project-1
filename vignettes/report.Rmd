@@ -448,6 +448,11 @@ rownames(result) <- c("Nearest Neighbors", "Baseline")
 colnames(result) <- c("Fold 1", "Fold 2", "Fold 3")
 result
 max.neighbors <- length(NN.pred.mat$train.loss.vec)
+
+```
+
+### Matrix of loss values
+```{r, fig.show='hold', fig.width= 6, fig.height= 6}
 barplot(
   result,
   main = "Regression: ozone",
@@ -455,6 +460,14 @@ barplot(
   legend = (rownames(result)),
   beside = TRUE
 )
+```
+
+Difference between NN and baseline:
+**The mean loss value of the NN prediction is typically smaller than the Baseline prediction.**
+
+
+### Train/validation loss plot
+```{r, fig.show='hold', fig.width= 6, fig.height= 6}
 matplot(
   y = cbind(NN.pred.mat$validation.loss.vec, NN.pred.mat$train.loss.vec),
   xlab = "neighbors",
@@ -478,20 +491,6 @@ legend(
   xjust = 1,
   yjust = 0
 )
-```
-
-### Matrix of loss values
-```{r, fig.show='hold', fig.width= 6, fig.height= 6}
-
-```
-
-Difference between NN and baseline:
-**The mean loss value of the NN prediction is typically smaller than the Baseline prediction.**
-
-
-### Train/validation loss plot
-```{r, fig.show='hold', fig.width= 6, fig.height= 6}
-
 ```
 
 The optimal number of neighbors is: **`r NN.pred.mat$selected.neighbors`**

@@ -12,7 +12,6 @@ BaselinePredict <- function(y.vec, fold.vec, n.folds) {
 }
 
 # Data 4: prostate
-
 data(prostate, package = "ElemStatLearn")
 X.mat = data.matrix(subset(prostate, select = -c(lpsa, train)))
 y.vec = as.vector(prostate$lpsa)
@@ -67,7 +66,6 @@ legend(
 
 
 # #Data 5: ozone
-# rm(list = ls())
 data(ozone, package = "ElemStatLearn")
 X.mat = data.matrix(subset(ozone, select = -c(ozone)))
 y.vec = as.vector(ozone$ozone)

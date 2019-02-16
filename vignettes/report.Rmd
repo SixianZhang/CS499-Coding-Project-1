@@ -1,30 +1,497 @@
+---
+title: "Report for project 1 on K Nearest Neighbors"
+author: "Sixian Zhang, Zaoyi Chi, Hao Wang"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Report for project 1 on nearest neighbors}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Manhattan distance: **$d(i,j)=\sum_{1}^{n}|X_1-X_2|+|Y_1-Y_2|$**
+
+For the nearest neighbor prediction function: **$f_{D,k(x)} = \frac{1}{k} \sum_{i\in N_{D,k}}^{n} y_i$**
+
+The optimal number of neighbors **$\hat{k} = argmin_{k\in (1,2,...,k_{max})} \frac{1}{F_{max}} \sum_{S=1}^{F_{max}} Error_{Ds}(f_{D,-S,k})$**
+
+  *(as estimated via minimizing the mean validation loss).
+
+```{r}
+## Source Code:
+## 1-3:
+
+binary.base.loss <- function(y.vec, fold.vec, n.folds){
+  base.loss = c(rep(0, n.folds))
+  index1 <- which(y.vec == 1)
+  index0 <- which(y.vec == 0)
+  if (length(index1) >= length(index0)){
+    base.predict <- 1
+  }else{
+    base.predict <- 0
+  }
+  
+  for (fold.i in seq(n.folds)){
+    validation.index = which(fold.vec == fold.i)
+    num.valid <- length(validation.index)
+    base.predict.vec <- rep(base.predict, num.valid)
+    num.miss.index <- which((base.predict.vec != y.vec[validation.index]) == 1)
+    base.loss[fold.i] = length(num.miss.index) / num.valid 
+  } 
+  base.loss
+}
+
+## 4-5:
+library(NearestNeighbors)
+BaselinePredict <- function(y.vec, fold.vec, n.folds) {
+  prediction <- rep(NA, n.folds)
+  prediction.loss <- rep(NA, n.folds)
+  for (fold.i in seq_len(n.folds)) {
+    train.index <- which(fold.vec != fold.i)
+    validation.index <- which(fold.vec == fold.i)
+    prediction[fold.i] <- mean(y.vec[train.index])
+    prediction.loss[fold.i] <-
+      mean((y.vec[validation.index] - prediction[fold.i]) ^ 2)
+  }
+  return(prediction.loss)
+}
+```
+
+
+
+
+
+
 ## Data set 1: spam
+```{r}
+#Data 1: spam
+#----------------------Data Initialization-------------------------------
+data(spam, package = "ElemStatLearn")
+n.folds = 3L
+X.mat <- data.matrix(subset(spam,select = -c(spam)))
+y.vec <- spam$spam
+levels(y.vec) <- c(0,1)
+y.vec <- as.double(as.vector(y.vec))
+testX.mat <- X.mat[c(1,nrow(X.mat)),]
+max.neighbors <- 30L
+fold.vec <- sample(rep(1:n.folds, l = nrow(X.mat)))
+#------------------------------------------------------------------------
+
+#-------------------Prediction vs original data--------------------------
+#X.mat: double matrix; y.vec: double vector; testX.mat: samller double matrix
+C.pred.model <- NNLearnCV(X.mat, y.vec, max.neighbors, fold.vec, n.folds)
+prediction.output <- C.pred.model$predict(testX.mat)
+original.output <- y.vec[c(1,nrow(X.mat))]
+pred.vs.og <- rbind(original.output, prediction.output)
+colnames(pred.vs.og) <- c("Test1","Test2")
+pred.vs.og
+#-------------------------------------------------------------------------
+
+# ouput 2x3 matirx of nearst-neighbor-predicaton accuracy VS base-line prediction
+base.loss <- binary.base.loss(y.vec, fold.vec, n.folds)
+nnp.predict.loss <- colMeans(C.pred.model$validation.loss.mat)
+nnploss.vs.baseloss <- rbind(nnp.predict.loss, base.loss)
+colnames(nnploss.vs.baseloss) <- c("Fold1","Fold2","Fold3")
+nnploss.vs.baseloss
+#------------------------------------------------------------------------------
+```
 
 ### Matrix of loss values
+```{r, fig.show='hold', fig.width= 6, fig.height= 6}
+barplot(
+  nnploss.vs.baseloss,
+  main = "Binary Classification: spam",
+  xlab = "mean loss value",
+  legend = (rownames(nnploss.vs.baseloss)),
+  beside = TRUE
+)
+```
 
-print out and/or plot the matrix.
+Difference between NN and baseline:
+The mean loss value of the NN prediction is typically smaller than the Baseline prediction.
 
-comment on difference between NN and baseline.
 
 ### Train/validation loss plot
+```{r, fig.show='hold', fig.width= 6, fig.height= 6}
 
-plot the two loss functions.
+matplot(
+  y = cbind(C.pred.model$validation.loss.vec, C.pred.model$train.loss.vec),
+  xlab = "neighbors",
+  ylab = "mean loss value",
+  type = "l",
+  lty = 1:2,
+  pch = 15,
+  col = c(17)
+)
 
-What is the optimal number of neighbors?
+dot.x <- C.pred.model$selected.neighbors
+dot.y <- C.pred.model$validation.loss.vec[dot.x]
+matpoints(x = dot.x,
+          y = dot.y,
+          col = 2,
+          pch = 19)
+legend(
+  x = max.neighbors,
+  0,
+  c("Validation loss", "Train loss"),
+  lty = 1:2,
+  xjust = 1,
+  yjust = 0
+)
+```
+
+The optimal number of neighbors is: **`r C.pred.model$selected.neighbors`**
+
+
+
+
+
+
+
 
 ## Data set 2: SAheart
+```{r}
+#Data 2: SAheart
+#--------------------Data Initalization---------------------------
+data(SAheart, package = "ElemStatLearn")
+n.folds = 3L
+X.mat <- data.matrix(subset(SAheart, select = -10))
+y.vec <- SAheart[,10]
+y.vec <- as.double(as.vector(y.vec))
+testX.mat <- X.mat[c(1, nrow(X.mat)-1),]
+max.neighbors <- 30L
+fold.vec <- sample(rep(1:n.folds, l = nrow(X.mat)))
+#------------------------------------------------------------------
+#-----------------------Prediction vs original data----------------
+C.pred.model <- NNLearnCV(X.mat, y.vec, max.neighbors, fold.vec, n.folds)
+prediction.output <- C.pred.model$predict(testX.mat)
+original.output <- y.vec[c(1,nrow(X.mat))]
+pred.vs.og <- rbind(original.output, prediction.output)
+colnames(pred.vs.og) <- c("Test1","Test2")
+pred.vs.og
+#-------------------------------------------------------------------------
+
+# ouput 2x3 matirx of nearst-neighbor-predicaton accuracy VS base-line prediction
+base.loss <- binary.base.loss(y.vec, fold.vec, n.folds)
+nnp.predict.loss <- colMeans(C.pred.model$validation.loss.mat)
+nnploss.vs.baseloss <- rbind(nnp.predict.loss, base.loss)
+colnames(nnploss.vs.baseloss) <- c("Fold1","Fold2","Fold3")
+nnploss.vs.baseloss
+```
 
 ### Matrix of loss values
+```{r, fig.show='hold', fig.width= 6, fig.height= 6}
+barplot(
+  nnploss.vs.baseloss,
+  main = "Binary Classification: SAheart",
+  xlab = "mean loss value",
+  legend = (rownames(nnploss.vs.baseloss)),
+  beside = TRUE
+)
+```
 
-print out and/or plot the matrix.
+Difference between NN and baseline:
 
-comment on difference between NN and baseline.
+The mean loss value of the NN prediction is similar to the Baseline prediction. Since SAheart dataset is small dataset with binary calsses. The general binary baseline priction is good for small dataset, becasue it relies on most of data in a samll set and can predict the most of of cases correctly.   
+
 
 ### Train/validation loss plot
+```{r, fig.show='hold', fig.width= 6, fig.height= 6}
 
-plot the two loss functions.
+dot.x <- C.pred.model$selected.neighbors
+dot.y <- C.pred.model$validation.loss.vec[dot.x]
 
-What is the optimal number of neighbors?
+matplot(
+  y = cbind(C.pred.model$validation.loss.vec, C.pred.model$train.loss.vec),
+  xlab = "neighbors",
+  ylab = "mean loss value",
+  type = "l",
+  lty = 1:2,
+  pch = 15,
+  col = c(17)
+)
 
-## Data set 3: ...
-...
+matpoints(x = dot.x,
+          y = dot.y,
+          col = 2,
+          pch = 19)
+
+
+legend(
+  x = max.neighbors,
+  0,
+  c("Validation loss", "Train loss"),
+  lty = 1:2,
+  xjust = 1,
+  yjust = 0
+)
+```
+
+The optimal number of neighbors is: **`r C.pred.model$selected.neighbors`**
+
+
+
+
+
+
+
+
+
+
+
+
+## Data set 3: zip.train
+```{r}
+#Data 3: zip.train
+#--------------------Data Initalization---------------------------
+data(zip.train, package = "ElemStatLearn")
+n.folds = 3L
+entire.mat <- data.matrix(zip.train)
+y.vec <- entire.mat[,1]
+binary.index <- which((y.vec == 1) | (y.vec == 0))
+X.mat <- entire.mat[binary.index,]
+y.vec <- y.vec[binary.index]
+testX.mat <- X.mat[c(1, nrow(X.mat)-1),]
+max.neighbors <- 30L
+fold.vec <- sample(rep(1:n.folds, l = nrow(X.mat)))
+
+#------------------------------------------------------------------
+#-----------------------Prediction vs original data----------------
+C.pred.model <- NNLearnCV(X.mat, y.vec, max.neighbors, fold.vec, n.folds)
+prediction.output <- C.pred.model$predict(testX.mat)
+original.output <- y.vec[c(1,nrow(X.mat))]
+pred.vs.og <- rbind(original.output, prediction.output)
+colnames(pred.vs.og) <- c("Test1","Test2")
+pred.vs.og
+#-------------------------------------------------------------------------
+
+# ouput 2x3 matirx of nearst-neighbor-predicaton accuracy VS base-line prediction
+base.loss <- binary.base.loss(y.vec, fold.vec, n.folds)
+nnp.predict.loss <- colMeans(C.pred.model$validation.loss.mat)
+nnploss.vs.baseloss <- rbind(nnp.predict.loss, base.loss)
+colnames(nnploss.vs.baseloss) <- c("Fold1","Fold2","Fold3")
+nnploss.vs.baseloss
+```
+
+### Matrix of loss values
+```{r, fig.show='hold', fig.width= 6, fig.height= 6}
+barplot(
+  nnploss.vs.baseloss,
+  main = "Binary Classification: zip.train",
+  xlab = "mean loss value",
+  legend = (rownames(nnploss.vs.baseloss)),
+  beside = TRUE
+)
+```
+
+Difference between NN and baseline:
+The mean loss value of the NN prediction is typically smaller than the Baseline prediction.
+
+
+### Train/validation loss plot
+```{r, fig.show='hold', fig.width= 6, fig.height= 6}
+dot.x <- C.pred.model$selected.neighbors
+dot.y <- C.pred.model$validation.loss.vec[dot.x]
+
+matplot(
+  y = cbind(C.pred.model$validation.loss.vec, C.pred.model$train.loss.vec),
+  xlab = "neighbors",
+  ylab = "mean loss value",
+  type = "l",
+  lty = 1:2,
+  pch = 15,
+  col = c(17)
+)
+
+matpoints(x = dot.x,
+          y = dot.y,
+          col = 2,
+          pch = 19)
+legend(
+  x = max.neighbors,
+  0,
+  c("Validation loss", "Train loss"),
+  lty = 1:2,
+  xjust = 1,
+  yjust = 0
+)
+```
+
+The optimal number of neighbors is: **`r C.pred.model$selected.neighbors`**
+
+
+
+
+
+
+
+
+
+## Data set 4: prostate
+```{r, fig.show='hold', fig.width= 6, fig.height= 6}
+# Data 4: prostate
+data(prostate, package = "ElemStatLearn")
+X.mat = data.matrix(subset(prostate, select = -c(lpsa, train)))
+y.vec = as.vector(prostate$lpsa)
+n.folds <- 3L
+fold.vec <- sample(rep(1:n.folds, l = nrow(X.mat)))
+
+NN.pred.mat <-
+  NNLearnCV(
+    X.mat = X.mat,
+    y.vec = y.vec,
+    fold.vec = fold.vec,
+    n.folds = n.folds
+  )
+NN.loss.vec <-
+NN.pred.mat$train.loss.mat[NN.pred.mat$selected.neighbors, ]
+baseline.loss.vec <- BaselinePredict(y.vec, fold.vec, n.folds)
+result <- t(cbind(NN.loss.vec, baseline.loss.vec))
+rownames(result) <- c("Nearest Neighbors", "Baseline")
+colnames(result) <- c("Fold 1", "Fold 2", "Fold 3")
+result
+max.neighbors <- length(NN.pred.mat$train.loss.vec)
+```
+
+### Matrix of loss values
+```{r, fig.show='hold', fig.width= 6, fig.height= 6}
+barplot(
+  result,
+  main = "Regression: prostate",
+  xlab = "mean loss value",
+  legend = (rownames(result)),
+  beside = TRUE
+)
+```
+
+Difference between NN and baseline: 
+The mean loss value of the NN prediction is typically smaller than the Baseline prediction.
+
+### Train/validation loss plot
+```{r, fig.show='hold', fig.width= 6, fig.height= 6}
+matplot(
+  y = cbind(NN.pred.mat$validation.loss.vec, NN.pred.mat$train.loss.vec),
+  xlab = "neighbors",
+  ylab = "mean loss value",
+  type = "l",
+  lty = 1:2,
+  pch = 15,
+  col = c(17)
+)
+dot.x <- NN.pred.mat$selected.neighbors
+dot.y <- NN.pred.mat$validation.loss.vec[dot.x]
+matpoints(x = dot.x,
+          y = dot.y,
+          col = 2,
+          pch = 19)
+legend(
+  x = max.neighbors,
+  0,
+  c("Validation loss", "Train loss"),
+  lty = 1:2,
+  xjust = 1,
+  yjust = 0
+)
+```
+
+The optimal number of neighbors is: **`r NN.pred.mat$selected.neighbors`**
+
+
+
+
+
+
+
+
+
+
+
+
+## Data set 5: ozone
+```{r, fig.show='hold', fig.width= 6, fig.height= 6}
+##Data 5: ozone
+data(ozone, package = "ElemStatLearn")
+X.mat = data.matrix(subset(ozone, select = -c(ozone)))
+y.vec = as.vector(ozone$ozone)
+n.folds <- 3L
+fold.vec <- sample(rep(1:n.folds, l = nrow(X.mat)))
+
+NN.pred.mat <-
+  NNLearnCV(
+    X.mat = X.mat,
+    y.vec = y.vec,
+    fold.vec = fold.vec,
+    n.folds = n.folds
+  )
+NN.loss.vec <-
+NN.pred.mat$train.loss.mat[NN.pred.mat$selected.neighbors, ]
+baseline.loss.vec <- BaselinePredict(y.vec, fold.vec, n.folds)
+result <- t(cbind(NN.loss.vec, baseline.loss.vec))
+rownames(result) <- c("Nearest Neighbors", "Baseline")
+colnames(result) <- c("Fold 1", "Fold 2", "Fold 3")
+result
+max.neighbors <- length(NN.pred.mat$train.loss.vec)
+barplot(
+  result,
+  main = "Regression: ozone",
+  xlab = "mean loss value",
+  legend = (rownames(result)),
+  beside = TRUE
+)
+matplot(
+  y = cbind(NN.pred.mat$validation.loss.vec, NN.pred.mat$train.loss.vec),
+  xlab = "neighbors",
+  ylab = "mean loss value",
+  type = "l",
+  lty = 1:2,
+  pch = 15,
+  col = c(17)
+)
+dot.x <- NN.pred.mat$selected.neighbors
+dot.y <- NN.pred.mat$validation.loss.vec[dot.x]
+matpoints(x = dot.x,
+          y = dot.y,
+          col = 2,
+          pch = 19)
+legend(
+  x = max.neighbors,
+  0,
+  c("Validation loss", "Train loss"),
+  lty = 1:2,
+  xjust = 1,
+  yjust = 0
+)
+```
+
+### Matrix of loss values
+```{r, fig.show='hold', fig.width= 6, fig.height= 6}
+
+```
+
+Difference between NN and baseline:
+The mean loss value of the NN prediction is typically smaller than the Baseline prediction.
+
+
+### Train/validation loss plot
+```{r, fig.show='hold', fig.width= 6, fig.height= 6}
+
+```
+
+The optimal number of neighbors is: **`r NN.pred.mat$selected.neighbors`**
+
+
+
+
+
+
+
+
+
+
